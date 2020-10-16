@@ -1,0 +1,13 @@
+### Gettings the users list
+GET http://localhost:8000/users/
+Accept: application/json
+
+### Adding the first root user
+PUT http://localhost:8000/users/
+Content-Type: application/json
+
+{
+  "login": "Admin",
+  "password": "admin",
+  "group_id": 3
+}

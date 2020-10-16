@@ -1,0 +1,27 @@
+### User groups list get reguest
+GET http://localhost:8000/groups/
+Accept: application/json
+
+### Sending create groups request
+PUT http://localhost:8000/groups/
+Content-Type: application/json
+
+{
+  "title": "Пользователь"
+}
+
+### Sending create groups request
+PUT http://localhost:8000/groups/
+Content-Type: application/json
+
+{
+  "title": "Модератор"
+}
+
+### Sending create groups request
+PUT http://localhost:8000/groups/
+Content-Type: application/json
+
+{
+  "title": "Администратор"
+}

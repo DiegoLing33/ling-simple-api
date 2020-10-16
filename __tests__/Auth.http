@@ -1,0 +1,14 @@
+### Sending create groups request
+POST http://localhost:8000/auth/
+Content-Type: application/json
+
+{
+  "login": "Admin",
+  "password": "admin"
+}
+
+### Tests the current user by token
+GET http://localhost:8000/auth/?token=cdaf7c721d1235f0712e47e623531707
+
+### Logout testing
+GET http://localhost:8000/auth/logout?token=cdaf7c721d1235f0712e47e623531707
