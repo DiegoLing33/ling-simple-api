@@ -15,17 +15,35 @@ from database import get_db
 from database.actions import UserActions, UserMetaActions
 from database.responses import ResponseUserMeta
 from database.schemas import UserMeta
-from routers.users import UserMetaCreateBody
+from routers.users import UserMetaCreateBody, UserMetaIdBody
 
 router = APIRouter()
 
 
-@router.put("/meta/{field}", response_model=UserMeta)
-def set_user_meta_value(
-        field: str,
-        body: UserMetaCreateBody,
-        db=Depends(get_db)
-):
+@router.post(
+    "/meta/{field}/remove",
+    response_model=bool,
+    summary="Removes the meta value"
+)
+def remove_user_meta_value(field: str, user: UserMetaIdBody, db=Depends(get_db)):
+    return UserMetaActions.remove(db, field=field, user_id=user.user_id)
+
+
+@router.post(
+    "/meta/{field}/recover",
+    response_model=bool,
+    summary="Recovers the meta value"
+)
+def remove_user_meta_value(field: str, user: UserMetaIdBody, db=Depends(get_db)):
+    return UserMetaActions.recover(db, field=field, user_id=user.user_id)
+
+
+@router.put(
+    "/meta/{field}",
+    response_model=UserMeta,
+    summary="Sets the user meta value"
+)
+def set_user_meta_value(field: str, body: UserMetaCreateBody, db=Depends(get_db)):
     """
     Sets the meta value
     \f
@@ -34,11 +52,7 @@ def set_user_meta_value(
     :param db:
     :return:
     """
-    db_user = UserActions.get(db, body.user_id)
-    if db_user:
-        return UserMetaActions.set(db, user_id=body.user_id, field=field, value=body.value)
-    else:
-        raise HTTPException(status_code=401, detail="User is undefined!")
+    return UserMetaActions.set(db, user_id=body.user_id, field=field, value=body.value)
 
 
 @router.get("/meta/{field}", response_model=UserMeta)

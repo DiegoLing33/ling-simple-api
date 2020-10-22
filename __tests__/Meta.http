@@ -1,4 +1,4 @@
-### Add meta info
+### Add meta info mail
 PUT http://localhost:8000/users/meta/mail
 Content-Type: application/json
 
@@ -7,6 +7,31 @@ Content-Type: application/json
   "value": "mymail@ya.ru"
 }
 
+### Add meta info name
+PUT http://localhost:8000/users/meta/name
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "value": "Adminus"
+}
+
 ### Returns the meta of the user
 GET http://localhost:8000/users/meta?user_id=1
 Accept: application/json
+
+### Removes the mail meta value
+POST http://localhost:8000/users/meta/mail/remove
+Content-Type: application/json
+
+{
+  "user_id": 1
+}
+
+### Recovers the mail meta value
+POST http://localhost:8000/users/meta/mail/recover
+Content-Type: application/json
+
+{
+  "user_id": 1
+}
