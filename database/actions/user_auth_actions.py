@@ -13,6 +13,7 @@ from hashlib import md5
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
+from database import DatabaseUtils
 from database.actions import UserActions
 from database.models import UserAuthModel
 from database.schemas import UserAuth
@@ -59,7 +60,7 @@ class UserAuthActions:
         :param token:
         :return:
         """
-        db_obj = db.query(UserAuthModel).filter(UserAuthModel.token == token).filter(UserAuthModel.state == 1).first()
+        db_obj = DatabaseUtils.core_query(db.query(UserAuthModel).filter(UserAuthModel.token == token)).first()
         if db_obj is None:
             raise HTTPException(status_code=201, detail="User's token is undefined!")
         return db_obj

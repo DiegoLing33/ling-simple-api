@@ -22,7 +22,11 @@ from database.schemas import UserAuth, UserAuthLogin
 router = APIRouter()
 
 
-@router.post("/", response_model=UserAuth)
+@router.post("/",
+             response_model=UserAuth,
+             summary="Authorizes user",
+             description="Authorizes user by login and password, and create the unique token"
+             )
 def auth(body: UserAuthLogin, db: Session = Depends(get_db), user_agent: Optional[str] = Header(None)):
     """
     User auth method. Creates the token
@@ -35,7 +39,10 @@ def auth(body: UserAuthLogin, db: Session = Depends(get_db), user_agent: Optiona
     return UserAuthActions.login(db, body.login, body.password, meta=user_agent)
 
 
-@router.get("/", response_model=UserAuth)
+@router.get("/",
+            response_model=UserAuth,
+            summary="Returns the current user by token"
+            )
 def me(token: str, db: Session = Depends(get_db)):
     """
     Returns the current user auth data

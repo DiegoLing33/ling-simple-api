@@ -27,6 +27,10 @@ class UserMetaCreateBody(BaseModel):
     user_id: int
 
 
+class UserMetaIdBody(BaseModel):
+    user_id: int
+
+
 @router.get("/",
             response_model=ResponseUsers,
             summary="Returns the users list",
@@ -68,4 +72,3 @@ def users_create(user: UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="This login already registered")
     return UserActions.add(db=db, user=user)
-
