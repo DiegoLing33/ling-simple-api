@@ -10,40 +10,48 @@
 
 from sqlalchemy.orm import Session
 
-from database.models import UserGroupModel
-from database.usergroup.schema import UserGroupCreate
+from database import DatabaseUtils
+from database.models import UserMetaModel
 
 
-def get_user_group(db: Session, group_id: int):
+class UserMetaActions:
     """
-    Returns the user group by id
-    :param db:
-    :param group_id:
-    :return:
+    The user meta actions utility
     """
-    return db.query(UserGroupModel).filter(UserGroupModel.id == group_id).first()
 
+    @staticmethod
+    def set(db: Session, user_id: int, field: str, value: str):
+        """
+        Sets the meta value
+        :param db:
+        :param user_id:
+        :param field:
+        :param value:
+        :return:
+        """
+        db_meta = db.query(UserMetaModel).filter(UserMetaModel.user_id == user_id) \
+            .filter(UserMetaModel.field == field)
+        if db_meta.count() > 0:
+            db_meta.update({"value": value})
+            db.commit()
+            return db_meta.first()
+        return DatabaseUtils.insert(db,
+                                    db_item=UserMetaModel(user_id=user_id, field=field, value=value))
 
-def get_user_groups(db: Session, offset: int = 0, limit: int = 100):
-    """
-    Returns all user groups
-    :param db:
-    :param offset:
-    :param limit:
-    :return:
-    """
-    return db.query(UserGroupModel).offset(offset).limit(limit).all()
+    @staticmethod
+    def list(db: Session, user_id: int, offset: int = 0, limit: int = 100):
+        return db.query(UserMetaModel).filter(UserMetaModel.user_id == user_id) \
+            .offset(offset).limit(limit).all()
 
-
-def create_user_group(db: Session, group: UserGroupCreate):
-    """
-    Creates the user group
-    :param db:
-    :param group:
-    :return:
-    """
-    db_item = UserGroupModel(title=group.title)
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    return db_item
+    @staticmethod
+    def get(db: Session, user_id: int, field: str):
+        """
+        Returns the user meta value
+        :param db:
+        :param user_id:
+        :param field:
+        :return:
+        """
+        return db.query(UserMetaModel).filter(UserMetaModel.user_id == user_id) \
+            .filter(UserMetaModel.field == field) \
+            .first()

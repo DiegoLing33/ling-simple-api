@@ -16,8 +16,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from database import get_db
-from database.usersauth.actions import user_auth_login, user_auth_get, user_auth_logout
-from database.usersauth.schema import UserAuth, UserAuthLogin
+from database.actions import UserAuthActions
+from database.schemas import UserAuth, UserAuthLogin
 
 router = APIRouter()
 
@@ -32,7 +32,7 @@ def auth(body: UserAuthLogin, db: Session = Depends(get_db), user_agent: Optiona
     :param user_agent:
     :return:
     """
-    return user_auth_login(db, body.login, body.password, meta=user_agent)
+    return UserAuthActions.login(db, body.login, body.password, meta=user_agent)
 
 
 @router.get("/", response_model=UserAuth)
@@ -44,7 +44,7 @@ def me(token: str, db: Session = Depends(get_db)):
     :param db:
     :return:
     """
-    return user_auth_get(db, token=token)
+    return UserAuthActions.get(db, token=token)
 
 
 @router.get("/logout")
@@ -57,4 +57,4 @@ def logout(token: str, db: Session = Depends(get_db)):
     :param db:
     :return:
     """
-    return user_auth_logout(db, token)
+    return UserAuthActions.logout(db, token)
