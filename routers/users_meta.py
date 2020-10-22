@@ -13,6 +13,7 @@ from fastapi import Depends, APIRouter, HTTPException
 
 from database import get_db
 from database.actions import UserActions, UserMetaActions
+from database.responses import ResponseUserMeta
 from database.schemas import UserMeta
 from routers.users import UserMetaCreateBody
 
@@ -60,7 +61,11 @@ def get_user_meta_value(
     raise HTTPException(status_code=401, detail="Meta value is undefined")
 
 
-@router.get("/meta", response_model=List[UserMeta])
+@router.get("/meta",
+            response_model=ResponseUserMeta,
+            summary="Returns the user metadata list",
+            description="Returns the user metadata list in offset and limit form"
+            )
 def get_user_metas(user_id: int, offset: int = 0, limit: int = 100, db=Depends(get_db)):
     """
     Returns all the meta of the user

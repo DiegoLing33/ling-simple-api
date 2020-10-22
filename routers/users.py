@@ -16,6 +16,7 @@ from sqlalchemy.orm import Session
 
 from database.actions import UserActions, UserMetaActions
 from database.get_db import get_db
+from database.responses import ResponseUsers
 from database.schemas import User, UserCreate, UserMeta
 
 router = APIRouter()
@@ -26,7 +27,11 @@ class UserMetaCreateBody(BaseModel):
     user_id: int
 
 
-@router.get("/", response_model=List[User])
+@router.get("/",
+            response_model=ResponseUsers,
+            summary="Returns the users list",
+            description="Returns the users list in offset and limit form"
+            )
 def users_list(offset: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """
     Returns the users list
@@ -48,13 +53,12 @@ def users_list(user_id: int, db: Session = Depends(get_db)):
     return UserActions.get(db, user_id)
 
 
-@router.put("/", response_model=User)
+@router.put("/", response_model=User, summary="Creates the new user")
 def users_create(user: UserCreate, db: Session = Depends(get_db)):
     """
     Create a user with information
     - **login**: the user login
     - **password**: the user password
-    - **group_id**: the user group id (optional, by default = 1)
     \f
     :param user:
     :param db:

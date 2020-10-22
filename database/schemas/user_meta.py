@@ -29,8 +29,6 @@ class UserMetaCreate(UserMetaBase):
 
 class UserMeta(UserMetaBase, CoreSchema):
     id: int
-    created: datetime
-    edited: datetime
 
     class Config:
         orm_mode = True

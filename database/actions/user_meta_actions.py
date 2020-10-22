@@ -40,8 +40,8 @@ class UserMetaActions:
 
     @staticmethod
     def list(db: Session, user_id: int, offset: int = 0, limit: int = 100):
-        return db.query(UserMetaModel).filter(UserMetaModel.user_id == user_id) \
-            .offset(offset).limit(limit).all()
+        query = db.query(UserMetaModel).filter(UserMetaModel.user_id == user_id)
+        return DatabaseUtils.limited_results_query(query, offset=offset, limit=limit)
 
     @staticmethod
     def get(db: Session, user_id: int, field: str):

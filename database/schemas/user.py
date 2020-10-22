@@ -25,12 +25,12 @@ class UserBase(BaseModel):
     group_id: int
 
 
-class UserCreate(UserBase):
+class UserCreate(BaseModel):
     """
     The create schema class
     """
+    login: str
     password: str
-    group_id: Optional[int]
 
 
 class User(UserBase, CoreSchema):

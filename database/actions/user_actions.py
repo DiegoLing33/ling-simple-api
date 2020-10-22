@@ -41,7 +41,7 @@ class UserActions:
         """
         hashpassword = md5(user.password.encode()).hexdigest()
         return DatabaseUtils.insert(db, UserModel(login=user.login, hashed_password=hashpassword,
-                                                  group_id=user.group_id if user.group_id else 1))
+                                                  group_id=1))
 
     @staticmethod
     def list(db: Session, offset: int = 0, limit: int = 100):
@@ -52,7 +52,7 @@ class UserActions:
         :param limit:
         :return:
         """
-        return db.query(UserModel).offset(offset).limit(limit).all()
+        return DatabaseUtils.limited_results(db=db, model=UserModel, offset=offset, limit=limit)
 
     @staticmethod
     def get(db: Session, user_id: int):
