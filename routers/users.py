@@ -11,13 +11,19 @@
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic.main import BaseModel
 from sqlalchemy.orm import Session
 
+from database.actions import UserActions, UserMetaActions
 from database.get_db import get_db
-from database.user.actions import get_users, create_user, get_user_by_login
-from database.user.schema import UserCreate, User
+from database.schemas import User, UserCreate, UserMeta
 
 router = APIRouter()
+
+
+class UserMetaCreateBody(BaseModel):
+    value: str
+    user_id: int
 
 
 @router.get("/", response_model=List[User])
@@ -28,7 +34,18 @@ def users_list(offset: int = 0, limit: int = 100, db: Session = Depends(get_db))
     - **limit**: users on list (max: 400)
     \f
     """
-    return get_users(db=db, offset=offset, limit=limit)
+    return UserActions.list(db=db, offset=offset, limit=limit)
+
+
+@router.get("/id/{user_id}", response_model=User)
+def users_list(user_id: int, db: Session = Depends(get_db)):
+    """
+    Returns the user by login
+    - **offset**: offset of the list
+    - **limit**: users on list (max: 400)
+    \f
+    """
+    return UserActions.get(db, user_id)
 
 
 @router.put("/", response_model=User)
@@ -43,7 +60,8 @@ def users_create(user: UserCreate, db: Session = Depends(get_db)):
     :param db:
     :return:
     """
-    db_user = get_user_by_login(db, login=user.login)
+    db_user = UserActions.by_login(db, login=user.login)
     if db_user:
         raise HTTPException(status_code=400, detail="This login already registered")
-    return create_user(db=db, user=user)
+    return UserActions.add(db=db, user=user)
+

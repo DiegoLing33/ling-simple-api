@@ -11,3 +11,7 @@ Content-Type: application/json
   "password": "admin",
   "group_id": 3
 }
+
+### Gettings the user by id 1
+GET http://localhost:8000/users/id/1
+Accept: application/json

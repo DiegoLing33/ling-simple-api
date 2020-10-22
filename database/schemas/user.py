@@ -7,55 +7,39 @@
 #
 #  Developed by Yakov V. Panov (C) Ling • Black 2020
 #  @site http://ling.black
+from datetime import datetime
+from typing import Optional, List
 
-from sqlalchemy.orm import Session
+from pydantic.main import BaseModel
 
-from database.models import UserModel
-from database.user.schema import UserCreate
+from .user_group import UserGroup
+from .user_meta import UserMeta
+from ..core.schemas import CoreSchema
 
 
-def get_user(db: Session, user_id: int):
+class UserBase(BaseModel):
     """
-    Returns the user by id
-    :param db:
-    :param user_id:
-    :return:
+    The base schema class
     """
-    return db.query(UserModel).filter(UserModel.id == user_id).first()
+    login: str
+    group_id: int
 
 
-def get_user_by_login(db: Session, login: str) -> UserModel:
+class UserCreate(UserBase):
     """
-    Returns the user by login
-
-    :param db:
-    :param login:
-    :return:
+    The create schema class
     """
-    return db.query(UserModel).filter(UserModel.login == login).first()
+    password: str
+    group_id: Optional[int]
 
 
-def get_users(db: Session, offset: int = 0, limit: int = 100):
-    """
-    Returns the users list
-    :param db:
-    :param offset:
-    :param limit:
-    :return:
-    """
-    return db.query(UserModel).offset(offset).limit(limit).all()
+class User(UserBase, CoreSchema):
+    id: int
+    created: datetime
+    group: UserGroup
 
+    meta: List[UserMeta]
 
-def create_user(db: Session, user: UserCreate):
-    """
-    Creates the user
-    :param db:
-    :param user:
-    :return:
-    """
-    hashpassword = user.password + "??"
-    db_user = UserModel(login=user.login, hashed_password=hashpassword, group_id=user.group_id if user.group_id else 1)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
