@@ -1,0 +1,12 @@
+### Add meta info
+PUT http://localhost:8000/users/meta/mail
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "value": "mymail@ya.ru"
+}
+
+### Returns the meta of the user
+GET http://localhost:8000/users/meta?user_id=1
+Accept: application/json

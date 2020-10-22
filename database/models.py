@@ -1,48 +1,81 @@
-from datetime import datetime
+#  ██╗░░░░░██╗███╗░░██╗░██████╗░░░░██████╗░██╗░░░░░░█████╗░░█████╗░██╗░░██╗
+#  ██║░░░░░██║████╗░██║██╔════╝░░░░██╔══██╗██║░░░░░██╔══██╗██╔══██╗██║░██╔╝
+#  ██║░░░░░██║██╔██╗██║██║░░██╗░░░░██████╦╝██║░░░░░███████║██║░░╚═╝█████═╝░
+#  ██║░░░░░██║██║╚████║██║░░╚██╗░░░██╔══██╗██║░░░░░██╔══██║██║░░██╗██╔═██╗░
+#  ███████╗██║██║░╚███║╚██████╔╝░░░██████╦╝███████╗██║░░██║╚█████╔╝██║░╚██╗
+#  ╚══════╝╚═╝╚═╝░░╚══╝░╚═════╝░░░░╚═════╝░╚══════╝╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝
+#
+#  Developed by Yakov V. Panov (C) Ling • Black 2020
+#  @site http://ling.black
 
-from sqlalchemy import Integer, Column, String, ForeignKey, DateTime
+from sqlalchemy import Integer, Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from database.database import Base
+from database import Base
+from database.core.models import CoreModel
 
 
-class UserModel(Base):
+#
+# +-----------------------------------------------+
+# |                   Users                       |
+# +-----------------------------------------------+
+#
+
+class UserModel(Base, CoreModel):
     """
     User model
     """
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
     login = Column(String)
     hashed_password = Column(String)
-    state = Column(Integer, default=1)
 
     group_id = Column(Integer, ForeignKey('users_groups.id'))
     group = relationship("UserGroupModel")
-    created = Column(DateTime, default=datetime.utcnow)
+
+    meta = relationship("UserMetaModel", back_populates="user")
 
 
-class UserGroupModel(Base):
+class UserGroupModel(Base, CoreModel):
     """
     User Group Model
     """
     __tablename__ = "users_groups"
 
-    id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
-    state = Column(Integer, default=1)
 
 
-class UserAuthModel(Base):
+#
+# +-----------------------------------------------+
+# |              Users Auth                       |
+# +-----------------------------------------------+
+#
+
+
+class UserAuthModel(Base, CoreModel):
     """
     User auth model
     """
     __tablename__ = "users_auth"
-
-    id = Column(Integer, primary_key=True, index=True)
-    created = Column(DateTime, default=datetime.utcnow)
-    state = Column(Integer, default=1)
     token = Column(String)
     meta = Column(String)
     user_id = Column(Integer, ForeignKey("users.id"))
     user = relationship("UserModel")
+
+
+#
+# +-----------------------------------------------+
+# |                 Users Meta                    |
+# +-----------------------------------------------+
+#
+
+class UserMetaModel(Base, CoreModel):
+    """
+    User meta model
+    """
+    __tablename__ = "users_meta"
+    user_id = Column(Integer, ForeignKey("users.id"))
+    field = Column(String)
+    value = Column(String)
+
+    user = relationship("UserModel", back_populates="meta")
