@@ -49,7 +49,7 @@ class DatabaseUtils:
             query.update({'state': 0})
             db.commit()
             return True
-        raise Exception("Meta value is undefined")
+        raise Exception("Couldn't remove an undefined object")
 
     @staticmethod
     def recover_query(db, query):
@@ -58,4 +58,4 @@ class DatabaseUtils:
             query.update({'state': 1})
             db.commit()
             return True
-        raise Exception("Meta value is undefined")
+        raise Exception("Couldn't recover an undefined object")
