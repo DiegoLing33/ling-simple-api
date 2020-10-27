@@ -1,0 +1,24 @@
+### Gets all the values
+GET http://localhost:8000/data/list
+
+### Sets the value 1
+PUT http://localhost:8000/data/name
+Content-Type: application/json
+
+{
+  "value": "The example name"
+}
+
+### Sets the value 2
+PUT http://localhost:8000/data/description
+Content-Type: application/json
+
+{
+  "value": "This is the testing description"
+}
+
+### Gets the value
+GET http://localhost:8000/data/name
+
+### Removes the value
+DELETE http://localhost:8000/data/name
