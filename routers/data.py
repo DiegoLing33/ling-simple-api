@@ -7,69 +7,54 @@
 #
 #  Developed by Yakov V. Panov (C) Ling • Black 2020
 #  @site http://ling.black
+from typing import List
 
-import uvicorn
-from fastapi import FastAPI
+from fastapi import APIRouter, Depends
+from pydantic.main import BaseModel
 
-from database.database import engine, Base
-from middleware import use_content_type
-from routers import users, groups, auth, users_meta, data
+from database import get_db
+from database.client import DataStore
+from database.schemas import DataStore
 
-Base.metadata.create_all(bind=engine)
 
-app = FastAPI(
-    title="Ling API Service",
-    description="This is example of the Ling API Service",
-    version="1.0.0",
-    openapi_tags=[
-        {
-            "name": "users",
-            "description": "User API methods"
-        },
-        {
-            "name": "groups",
-            "description": "User role groups API methods"
-        },
-        {
-            "name": "auth",
-            "description": "Authorization API methods"
-        }
-    ]
+class _DataValueBody(BaseModel):
+    value: str
+
+
+router = APIRouter()
+
+
+@router.get(
+    "/list",
+    summary="Returns the list of the store",
+    description="All variables stored in data table",
+    response_model=List[DataStore]
 )
-# Middlewares
-use_content_type(app)
+def api_data_list(db=Depends(get_db)):
+    return DataStore.list(db)
 
-# Adding routes
-app.include_router(
-    users.router,
-    prefix="/users",
-    tags=["users"]
+
+@router.put(
+    "/{field}",
+    summary="Sets the value to the field in the store",
+    response_model=DataStore
 )
+def api_data_set(field: str, body: _DataValueBody, db=Depends(get_db)):
+    return DataStore.set(db, field=field, value=body.value)
 
-app.include_router(
-    users_meta.router,
-    prefix="/users",
-    tags=["users"]
+
+@router.get(
+    "/{field}",
+    summary="Returns the field's value",
+    response_model=DataStore
 )
+def api_data_get(field: str, db=Depends(get_db)):
+    return DataStore.get(db, field=field)
 
-app.include_router(
-    groups.router,
-    prefix="/groups",
-    tags=["groups"]
+
+@router.delete(
+    "/{field}",
+    summary="Deletes the field's value",
 )
-
-app.include_router(
-    auth.router,
-    prefix="/auth",
-    tags=["auth"]
-)
-
-app.include_router(
-    data.router,
-    prefix="/data",
-    tags=["data"]
-)
-
-# Entry point
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+def api_data_remove(field: str, db=Depends(get_db)):
+    return DataStore.remove(db, field=field)

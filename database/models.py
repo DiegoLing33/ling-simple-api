@@ -11,7 +11,7 @@
 from sqlalchemy import Integer, Column, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from database import Base
+from database import Base, MetaTableCoreModel
 from database.core.models import CoreModel
 
 
@@ -69,13 +69,57 @@ class UserAuthModel(Base, CoreModel):
 # +-----------------------------------------------+
 #
 
-class UserMetaModel(Base, CoreModel):
+class UserMetaModel(Base, MetaTableCoreModel):
     """
     User meta model
     """
     __tablename__ = "users_meta"
     user_id = Column(Integer, ForeignKey("users.id"))
-    field = Column(String)
-    value = Column(String)
-
     user = relationship("UserModel", back_populates="meta")
+
+
+#
+# +-----------------------------------------------+
+# |                    Data                       |
+# +-----------------------------------------------+
+#
+
+class DataModel(Base, MetaTableCoreModel):
+    """
+    User model
+    """
+    __tablename__ = "data"
+
+
+#
+# +-----------------------------------------------+
+# |                    Notes                      |
+# +-----------------------------------------------+
+#
+
+class NoteModel(Base, CoreModel):
+    """
+    User model
+    """
+    __tablename__ = "notes"
+
+    title = Column(String)
+    url = Column(String)
+    content = Column(String)
+
+    meta = relationship("NoteMetaModel", back_populates="note")
+
+
+#
+# +-----------------------------------------------+
+# |                 Notes Meta                    |
+# +-----------------------------------------------+
+#
+
+class NoteMetaModel(Base, MetaTableCoreModel):
+    """
+    User meta model
+    """
+    __tablename__ = "notes_meta"
+    note_id = Column(Integer, ForeignKey("notes.id"))
+    note = relationship("NoteModel", back_populates="meta")

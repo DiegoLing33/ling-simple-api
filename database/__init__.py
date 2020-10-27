@@ -11,3 +11,4 @@
 from .get_db import get_db
 from .database import Base, SessionLocal, engine
 from .utils import DatabaseUtils
+from .core.metatables import MetaTableCoreModel
