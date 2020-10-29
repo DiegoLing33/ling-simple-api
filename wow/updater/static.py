@@ -8,15 +8,10 @@
 #  Developed by Yakov V. Panov (C) Ling • Black 2020
 #  @site http://ling.black
 
-#  ██╗░░░░░██╗███╗░░██╗░██████╗░░░░██████╗░██╗░░░░░░█████╗░░█████╗░██╗░░██╗
-#  ██║░░░░░██║████╗░██║██╔════╝░░░░██╔══██╗██║░░░░░██╔══██╗██╔══██╗██║░██╔╝
-#  ██║░░░░░██║██╔██╗██║██║░░██╗░░░░██████╦╝██║░░░░░███████║██║░░╚═╝█████═╝░
-#  ██║░░░░░██║██║╚████║██║░░╚██╗░░░██╔══██╗██║░░░░░██╔══██║██║░░██╗██╔═██╗░
-#  ███████╗██║██║░╚███║╚██████╔╝░░░██████╦╝███████╗██║░░██║╚█████╔╝██║░╚██╗
-#  ╚══════╝╚═╝╚═╝░░╚══╝░╚═════╝░░░░╚═════╝░╚══════╝╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝
-#
-#  Developed by Yakov V. Panov (C) Ling • Black 2020
-#  @site http://ling.black
+
+from logzero import logger
+from progress.bar import Bar
+
 from wow.blizzard.core import blizzard_db
 from wow.database.models import CharacterRaceModel, CharacterClassModel, CharacterSpecModel
 from wow.interface.blizzard_api import BlizzardAPI
@@ -30,53 +25,56 @@ class StaticUpdater:
     Game classes, races, specializations
 
     """
+
     @staticmethod
     def update_races():
         """
         Downloads the races data
         :return:
         """
-        print('Races updating...')
         races = BlizzardAPI.races()
         db = blizzard_db()
-        print(f'Got {len(races)} races...')
-        print('Clearing table...')
+
+        logger.info("Starting downloading races...")
+        logger.info(f"Total count: {len(races)}")
+        bar = Bar('Races downloading', max=len(races), fill='█')
+
         db.query(CharacterRaceModel).delete()
         for race in races:
-            print(f'Added race: {race.title}')
             db.add(CharacterRaceModel(
                 title=race.title,
                 wow_id=race.wow_id
             ))
-        print('Commit...')
+            bar.next()
         db.commit()
-        print('Done.')
 
     @staticmethod
     def update_classes():
-        print('Classes updating...')
         classes = BlizzardAPI.classes()
         db = blizzard_db()
-        print(f'Got {len(classes)} classes...')
-        print('Clearing table...')
+
+        logger.info("Starting downloading classes...")
+        logger.info(f"Total count: {len(classes)}")
+        bar = Bar('Classes downloading', max=len(classes), fill='█')
+
         db.query(CharacterClassModel).delete()
         for item in classes:
-            print(f'Added class: {item.title}')
             db.add(CharacterClassModel(
                 title=item.title,
                 wow_id=item.wow_id
             ))
-        print('Commit...')
+            bar.next()
         db.commit()
-        print('Done.')
 
     @staticmethod
     def update_specs():
-        print('Specializations updating...')
         classes = BlizzardAPI.specs()
         db = blizzard_db()
-        print(f'Got {len(classes)} specializations...')
-        print('Clearing table...')
+
+        logger.info("Starting downloading specializations...")
+        logger.info(f"Total count: {len(classes)}")
+        bar = Bar('Specializations downloading', max=len(classes), fill='█')
+
         db.query(CharacterSpecModel).delete()
         for item in classes:
             print(f'Added specialization: {item.title}')
@@ -85,6 +83,5 @@ class StaticUpdater:
                 wow_id=item.wow_id,
                 type=item.type
             ))
-        print('Commit...')
+            bar.next()
         db.commit()
-        print('Done.')
