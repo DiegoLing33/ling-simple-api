@@ -13,6 +13,12 @@ from wow.database.models import CharacterEquipmentModel, CharacterModel
 from wow.downloaders import MediaDownloader
 
 
+def connector(wow_id, image_id):
+    db = blizzard_db()
+    db.query(CharacterEquipmentModel).filter(CharacterEquipmentModel.wow_id == wow_id).update({'image_id': image_id})
+    db.commit()
+
+
 class MediaUpdater:
     """
     Updates all the media data
@@ -30,7 +36,8 @@ class MediaUpdater:
         """
         MediaDownloader.download_items_images(
             blizzard_db().query(CharacterEquipmentModel).all(),
-            path
+            path,
+            connector=connector
         )
 
     @staticmethod
