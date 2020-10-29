@@ -10,7 +10,10 @@
 
 import uvicorn
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+from starlette.staticfiles import StaticFiles
 
+from wow.router import character, guild
 from database.database import engine, Base
 from middleware import use_content_type
 from routers import users, groups, auth, users_meta, data
@@ -38,6 +41,19 @@ app = FastAPI(
 )
 # Middlewares
 use_content_type(app)
+
+origins = [
+    "http://localhost:3000",
+    "*"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Adding routes
 app.include_router(
@@ -69,6 +85,20 @@ app.include_router(
     prefix="/data",
     tags=["data"]
 )
+
+app.include_router(
+    character.router,
+    prefix="/characters",
+    tags=['wow']
+)
+
+app.include_router(
+    guild.router,
+    prefix="/guild",
+    tags=['wow']
+)
+
+app.mount("/static", StaticFiles(directory="static"))
 
 # Entry point
 if __name__ == "__main__":
