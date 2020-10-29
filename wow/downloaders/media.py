@@ -7,6 +7,7 @@
 #
 #  Developed by Yakov V. Panov (C) Ling • Black 2020
 #  @site http://ling.black
+import os
 
 from logzero import logger
 
@@ -27,10 +28,12 @@ class MediaDownloader:
     @staticmethod
     def download_items_images(
             items,
-            path=default_items_images_path
+            path=default_items_images_path,
+            connector=None,
     ):
         """
         Downloads all items images and saves it to the directory
+        :param connector:
         :param items:
         :param path:
         :return:
@@ -42,13 +45,20 @@ class MediaDownloader:
         for model in items:
             resp = blizzard_media(f"item/{model.wow_id}")
             url = resp['assets'][0]['value']
-            LSAURL(url).download_file(f'{path}/{model.wow_id}.jpg')
+            file_data_id = resp['assets'][0]['file_data_id']
+            file_path = f'{path}/{file_data_id}.jpg'
+
+            if connector is not None:
+                connector(wow_id=model.wow_id, image_id=file_data_id)
+
+            if not os.path.isfile(file_path):
+                LSAURL(url).download_file(file_path)
             bar.next()
 
     @staticmethod
     def download_characters_images(
             characters,
-            path=default_characters_images_path
+            path=default_characters_images_path,
     ):
         """
         Downloads the character images
