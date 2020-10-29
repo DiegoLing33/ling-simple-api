@@ -29,6 +29,8 @@ def use_content_type(app):
         response = await call_next(request)
         if '/docs' in url:
             pass
+        elif '/static' in url:
+            pass
         else:
             response.headers["content-type"] = "application/json;charset=utf-8"
         return response
