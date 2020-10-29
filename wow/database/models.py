@@ -20,6 +20,12 @@ class CharacterRaceModel(Base, CoreModel):
     title = Column(String)
 
 
+class CharacterRoleModel(Base, CoreModel):
+    __tablename__ = "characters_roles"
+    role_index = Column(Integer)
+    title = Column(String)
+
+
 class CharacterClassModel(Base, CoreModel):
     __tablename__ = "characters_classes"
     wow_id = Column(Integer)
@@ -69,6 +75,9 @@ class CharacterModel(Base, CoreModel):
     level = Column(Integer)
     gender = Column(String)
     faction = Column(String)
+
+    role_index = Column(Integer, ForeignKey("characters_roles.role_index"))
+    role = relationship("CharacterRoleModel")
 
     character_race_id = Column(Integer, ForeignKey("characters_races.wow_id"))
     character_race = relationship("CharacterRaceModel")

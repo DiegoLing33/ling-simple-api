@@ -79,6 +79,15 @@ class CharacterRace(BaseModel):
         arbitrary_types_allowed = True
 
 
+class CharacterRole(BaseModel):
+    role_index: int
+    title: str
+
+    class Config:
+        orm_mode = True
+        arbitrary_types_allowed = True
+
+
 class CharacterClass(BaseModel):
     wow_id: int
     title: str
@@ -104,6 +113,9 @@ class Character(BaseModel):
     name: str
     gender: str
     level: int
+
+    role_index: Optional[int]
+    role: Optional[CharacterRole]
 
     faction: str
 
